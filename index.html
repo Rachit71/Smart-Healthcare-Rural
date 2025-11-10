@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Healthcare Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .notification {
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-full">
+    <div id="app" class="min-h-full">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center">
+                            <i class="fas fa-heartbeat text-2xl text-blue-600 mr-2"></i>
+                            <span class="text-xl font-bold text-gray-900">HealthCare+</span>
+                        </div>
+                        <div class="hidden md:ml-6 md:flex md:space-x-8">
+                            <button onclick="showSection('dashboard')" class="nav-link text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium">
+                                <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                            </button>
+                            <button onclick="showSection('patients')" class="nav-link text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">
+                                <i class="fas fa-users mr-2"></i>Patients
+                            </button>
+                            <button onclick="showSection('appointments')" class="nav-link text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">
+                                <i class="fas fa-calendar-alt mr-2"></i>Appointments
+                            </button>
+                            <button onclick="showSection('teleconsult')" class="nav-link text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">
+                                <i class="fas fa-video mr-2"></i>Teleconsult
+                            </button>
+                            <button onclick="showSection('ml-insights')" class="nav-link text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">
+                                <i class="fas fa-brain mr-2"></i>AI Insights
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i class="fas fa-bell text-lg"></i>
+                                <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <img class="h-8 w-8 rounded-full" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%234F46E5'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='20' font-family='Arial'%3EDr%3C/text%3E%3C/svg%3E" alt="Profile">
+                            <span class="text-sm font-medium text-gray-700">Dr. Sarah Johnson</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Notification Bar -->
+        <div id="notification" class="hidden bg-green-500 text-white px-4 py-2 text-center notification">
+            <span id="notification-text"></span>
+        </div>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section fade-in">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Healthcare Dashboard</h1>
+                    <p class="text-gray-600">Welcome back, Dr. Johnson. Here's your overview for today.</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white overflow-hidden shadow-lg rounded-lg border border-gray-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-users text-2xl text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Total Patients</p>
+                                    <p class="text-2xl font-semibold text-gray-900">1,247</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white overflow-hidden shadow-lg rounded-lg border border-gray-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-calendar-check text-2xl text-green-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Today's Appointments</p>
+                                    <p class="text-2xl font-semibold text-gray-900">23</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white overflow-hidden shadow-lg rounded-lg border border-gray-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-video text-2xl text-purple-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Teleconsultations</p>
+                                    <p class="text-2xl font-semibold text-gray-900">8</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white overflow-hidden shadow-lg rounded-lg border border-gray-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">High Risk Alerts</p>
+                                    <p class="text-2xl font-semibold text-gray-900">5</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Patient Visits This Week</h3>
+                        <canvas id="visitsChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="h-2 w-2 bg-green-500 rounded-full pulse-dot"></div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">New patient registered: Maria Santos</p>
+                                    <p class="text-xs text-gray-500">2 minutes ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="h-2 w-2 bg-blue-500 rounded-full"></div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Teleconsultation completed with John Doe</p>
+                                    <p class="text-xs text-gray-500">15 minutes ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="h-2 w-2 bg-yellow-500 rounded-full"></div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">High risk alert: Patient requires follow-up</p>
+                                    <p class="text-xs text-gray-500">1 hour ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients Section -->
+            <div id="patients-section" class="section hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Patient Management</h1>
+                        <p class="text-gray-600">Manage patient records and medical history</p>
+                    </div>
+                    <button onclick="showAddPatientModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add Patient
+                    </button>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="patient-search" class="block text-sm font-medium text-gray-700 mb-2">Search Patients</label>
+                            <input type="text" id="patient-search" placeholder="Search by name, ID, or phone..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="age-filter" class="block text-sm font-medium text-gray-700 mb-2">Age Group</label>
+                            <select id="age-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Ages</option>
+                                <option value="0-18">0-18 years</option>
+                                <option value="19-35">19-35 years</option>
+                                <option value="36-60">36-60 years</option>
+                                <option value="60+">60+ years</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="risk-filter" class="block text-sm font-medium text-gray-700 mb-2">Risk Level</label>
+                            <select id="risk-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Risk Levels</option>
+                                <option value="low">Low Risk</option>
+                                <option value="medium">Medium Risk</option>
+                                <option value="high">High Risk</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patients Table -->
+                <div class="bg-white shadow-lg rounded-lg border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Patient List</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Visit</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patients-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Patient rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div id="appointments-section" class="section hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Appointment Management</h1>
+                        <p class="text-gray-600">Schedule and manage patient appointments</p>
+                    </div>
+                    <button onclick="showBookAppointmentModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Book Appointment
+                    </button>
+                </div>
+
+                <!-- Calendar View -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900">Today's Schedule</h3>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Day</button>
+                                    <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md">Week</button>
+                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Month</button>
+                                </div>
+                            </div>
+                            <div id="appointments-list" class="space-y-4">
+                                <!-- Appointments will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600">Total Today</span>
+                                    <span class="text-sm font-semibold text-gray-900">23</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600">Completed</span>
+                                    <span class="text-sm font-semibold text-green-600">15</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600">Upcoming</span>
+                                    <span class="text-sm font-semibold text-blue-600">8</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600">Cancelled</span>
+                                    <span class="text-sm font-semibold text-red-600">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teleconsultation Section -->
+            <div id="teleconsult-section" class="section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Teleconsultation</h1>
+                    <p class="text-gray-600">Conduct remote consultations with patients</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Video Call Interface -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white shadow-lg rounded-lg border border-gray-200 overflow-hidden">
+                            <div class="bg-gray-900 h-96 flex items-center justify-center relative">
+                                <div id="video-placeholder" class="text-center">
+                                    <i class="fas fa-video text-6xl text-gray-400 mb-4"></i>
+                                    <p class="text-gray-400 text-lg">No active consultation</p>
+                                    <button onclick="startConsultation()" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                                        <i class="fas fa-play mr-2"></i>Start Consultation
+                                    </button>
+                                </div>
+                                <div id="video-active" class="hidden w-full h-full">
+                                    <div class="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-md text-sm">
+                                        <i class="fas fa-circle text-red-500 mr-2"></i>Live
+                                    </div>
+                                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+                                        <button class="bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full">
+                                            <i class="fas fa-microphone"></i>
+                                        </button>
+                                        <button class="bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full">
+                                            <i class="fas fa-video"></i>
+                                        </button>
+                                        <button onclick="endConsultation()" class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full">
+                                            <i class="fas fa-phone-slash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat and Patient Info -->
+                    <div class="space-y-6">
+                        <!-- Patient Info -->
+                        <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Current Patient</h3>
+                            <div id="current-patient-info">
+                                <p class="text-gray-500 text-center py-4">No patient selected</p>
+                            </div>
+                        </div>
+
+                        <!-- Chat -->
+                        <div class="bg-white shadow-lg rounded-lg border border-gray-200 flex flex-col h-80">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Chat</h3>
+                            </div>
+                            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3">
+                                <!-- Chat messages will be populated here -->
+                            </div>
+                            <div class="p-4 border-t border-gray-200">
+                                <div class="flex space-x-2">
+                                    <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ML Insights Section -->
+            <div id="ml-insights-section" class="section hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">AI Health Insights</h1>
+                    <p class="text-gray-600">Machine learning powered health predictions and recommendations</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Risk Assessment Tool -->
+                    <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Health Risk Assessment</h3>
+                        <form id="risk-assessment-form" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="patient-age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                                    <input type="number" id="patient-age" min="0" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label for="patient-gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                    <select id="patient-gender" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Select</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="blood-pressure" class="block text-sm font-medium text-gray-700 mb-1">Blood Pressure (systolic)</label>
+                                    <input type="number" id="blood-pressure" min="80" max="200" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label for="cholesterol" class="block text-sm font-medium text-gray-700 mb-1">Cholesterol (mg/dL)</label>
+                                    <input type="number" id="cholesterol" min="100" max="400" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="bmi" class="block text-sm font-medium text-gray-700 mb-1">BMI</label>
+                                    <input type="number" id="bmi" min="15" max="50" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label for="smoking" class="block text-sm font-medium text-gray-700 mb-1">Smoking Status</label>
+                                    <select id="smoking" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Select</option>
+                                        <option value="never">Never</option>
+                                        <option value="former">Former</option>
+                                        <option value="current">Current</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md font-medium transition-colors">
+                                <i class="fas fa-brain mr-2"></i>Analyze Risk
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Risk Results -->
+                    <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Risk Analysis Results</h3>
+                        <div id="risk-results" class="text-center py-8">
+                            <i class="fas fa-chart-line text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Complete the assessment to see results</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ML Model Performance -->
+                <div class="bg-white shadow-lg rounded-lg border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Model Performance Dashboard</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600">94.2%</div>
+                            <div class="text-sm text-gray-600">Accuracy</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600">91.8%</div>
+                            <div class="text-sm text-gray-600">Precision</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-600">89.5%</div>
+                            <div class="text-sm text-gray-600">Recall</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <!-- Add Patient Modal -->
+        <div id="add-patient-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Patient</h3>
+                    <button onclick="closeModal('add-patient-modal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="add-patient-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="first-name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="first-name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="last-name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="last-name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="date-of-birth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                            <input type="date" id="date-of-birth" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <select id="gender" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <textarea id="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="medical-history" class="block text-sm font-medium text-gray-700 mb-1">Medical History</label>
+                        <textarea id="medical-history" rows="3" placeholder="Any relevant medical history..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal('add-patient-modal')" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">Add Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Book Appointment Modal -->
+        <div id="book-appointment-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Book Appointment</h3>
+                    <button onclick="closeModal('book-appointment-modal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="book-appointment-form" class="space-y-4">
+                    <div>
+                        <label for="appointment-patient" class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+                        <select id="appointment-patient" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Patient</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="appointment-date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <input type="date" id="appointment-date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="appointment-time" class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                            <select id="appointment-time" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Time</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="09:30">9:30 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="10:30">10:30 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="11:30">11:30 AM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="14:30">2:30 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="15:30">3:30 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="16:30">4:30 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="appointment-type" class="block text-sm font-medium text-gray-700 mb-1">Appointment Type</label>
+                        <select id="appointment-type" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Type</option>
+                            <option value="consultation">General Consultation</option>
+                            <option value="follow-up">Follow-up</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="teleconsult">Teleconsultation</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <textarea id="appointment-notes" rows="3" placeholder="Any additional notes..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal('book-appointment-modal')" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">Book Appointment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentSection = 'dashboard';
+        let patients = [
+            { id: 1, firstName: 'John', lastName: 'Doe', age: 45, phone: '+1-555-0123', riskLevel: 'medium', lastVisit: '2024-01-15' },
+            { id: 2, firstName: 'Maria', lastName: 'Santos', age: 32, phone: '+1-555-0124', riskLevel: 'low', lastVisit: '2024-01-20' },
+            { id: 3, firstName: 'Robert', lastName: 'Johnson', age: 67, phone: '+1-555-0125', riskLevel: 'high', lastVisit: '2024-01-18' },
+            { id: 4, firstName: 'Emily', lastName: 'Chen', age: 28, phone: '+1-555-0126', riskLevel: 'low', lastVisit: '2024-01-22' },
+            { id: 5, firstName: 'Michael', lastName: 'Brown', age: 55, phone: '+1-555-0127', riskLevel: 'medium', lastVisit: '2024-01-19' }
+        ];
+
+        let appointments = [
+            { id: 1, patientId: 1, patientName: 'John Doe', date: '2024-01-25', time: '09:00', type: 'consultation', status: 'scheduled' },
+            { id: 2, patientId: 2, patientName: 'Maria Santos', date: '2024-01-25', time: '10:30', type: 'follow-up', status: 'completed' },
+            { id: 3, patientId: 3, patientName: 'Robert Johnson', date: '2024-01-25', time: '14:00', type: 'teleconsult', status: 'scheduled' },
+            { id: 4, patientId: 4, patientName: 'Emily Chen', date: '2024-01-25', time: '15:30', type: 'consultation', status: 'scheduled' }
+        ];
+
+        let chatMessages = [];
+        let isConsultationActive = false;
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            document.getElementById(sectionName + '-section').classList.add('fade-in');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-gray-900', 'border-blue-500');
+                link.classList.add('text-gray-500', 'border-transparent');
+            });
+            
+            event.target.classList.remove('text-gray-500', 'border-transparent');
+            event.target.classList.add('text-gray-900', 'border-blue-500');
+            
+            currentSection = sectionName;
+            
+            // Load section-specific data
+            if (sectionName === 'patients') {
+                loadPatients();
+            } else if (sectionName === 'appointments') {
+                loadAppointments();
+            } else if (sectionName === 'dashboard') {
+                loadDashboard();
+            }
+        }
+
+        // Dashboard Functions
+        function loadDashboard() {
+            // Initialize charts
+            const ctx = document.getElementById('visitsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Patient Visits',
+                        data: [12, 19, 15, 25, 22, 18, 20],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Patient Management Functions
+        function loadPatients() {
+            const tbody = document.getElementById('patients-table-body');
+            tbody.innerHTML = '';
+            
+            patients.forEach(patient => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <span class="text-sm font-medium text-gray-700">${patient.firstName[0]}${patient.lastName[0]}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${patient.firstName} ${patient.lastName}</div>
+                                <div class="text-sm text-gray-500">ID: ${patient.id.toString().padStart(4, '0')}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${patient.age}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${patient.phone}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRiskLevelClass(patient.riskLevel)}">
+                            ${patient.riskLevel.charAt(0).toUpperCase() + patient.riskLevel.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(patient.lastVisit)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewPatient(${patient.id})" class="text-blue-600 hover:text-blue-900 mr-3">View</button>
+                        <button onclick="editPatient(${patient.id})" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getRiskLevelClass(riskLevel) {
+            switch(riskLevel) {
+                case 'low': return 'bg-green-100 text-green-800';
+                case 'medium': return 'bg-yellow-100 text-yellow-800';
+                case 'high': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function showAddPatientModal() {
+            document.getElementById('add-patient-modal').classList.remove('hidden');
+        }
+
+        function viewPatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (patient) {
+                showNotification(`Viewing patient: ${patient.firstName} ${patient.lastName}`);
+            }
+        }
+
+        function editPatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (patient) {
+                showNotification(`Editing patient: ${patient.firstName} ${patient.lastName}`);
+            }
+        }
+
+        // Appointment Management Functions
+        function loadAppointments() {
+            const appointmentsList = document.getElementById('appointments-list');
+            appointmentsList.innerHTML = '';
+            
+            appointments.forEach(appointment => {
+                const appointmentDiv = document.createElement('div');
+                appointmentDiv.className = 'border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors';
+                appointmentDiv.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="text-sm font-medium text-gray-900">${appointment.time}</span>
+                                <span class="px-2 py-1 text-xs rounded-full ${getAppointmentTypeClass(appointment.type)}">
+                                    ${appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1)}
+                                </span>
+                                <span class="px-2 py-1 text-xs rounded-full ${getAppointmentStatusClass(appointment.status)}">
+                                    ${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-900 font-medium">${appointment.patientName}</div>
+                        </div>
+                        <div class="flex space-x-2">
+                            ${appointment.status === 'scheduled' ? `
+                                <button onclick="startAppointment(${appointment.id})" class="text-green-600 hover:text-green-800 text-sm">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button onclick="rescheduleAppointment(${appointment.id})" class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                appointmentsList.appendChild(appointmentDiv);
+            });
+            
+            // Populate patient dropdown for booking
+            const patientSelect = document.getElementById('appointment-patient');
+            patientSelect.innerHTML = '<option value="">Select Patient</option>';
+            patients.forEach(patient => {
+                const option = document.createElement('option');
+                option.value = patient.id;
+                option.textContent = `${patient.firstName} ${patient.lastName}`;
+                patientSelect.appendChild(option);
+            });
+        }
+
+        function getAppointmentTypeClass(type) {
+            switch(type) {
+                case 'consultation': return 'bg-blue-100 text-blue-800';
+                case 'follow-up': return 'bg-green-100 text-green-800';
+                case 'emergency': return 'bg-red-100 text-red-800';
+                case 'teleconsult': return 'bg-purple-100 text-purple-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getAppointmentStatusClass(status) {
+            switch(status) {
+                case 'scheduled': return 'bg-yellow-100 text-yellow-800';
+                case 'completed': return 'bg-green-100 text-green-800';
+                case 'cancelled': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function showBookAppointmentModal() {
+            document.getElementById('book-appointment-modal').classList.remove('hidden');
+        }
+
+        function startAppointment(appointmentId) {
+            const appointment = appointments.find(a => a.id === appointmentId);
+            if (appointment) {
+                showNotification(`Starting appointment with ${appointment.patientName}`);
+                appointment.status = 'in-progress';
+                loadAppointments();
+            }
+        }
+
+        function rescheduleAppointment(appointmentId) {
+            const appointment = appointments.find(a => a.id === appointmentId);
+            if (appointment) {
+                showNotification(`Rescheduling appointment with ${appointment.patientName}`);
+            }
+        }
+
+        // Teleconsultation Functions
+        function startConsultation() {
+            isConsultationActive = true;
+            document.getElementById('video-placeholder').classList.add('hidden');
+            document.getElementById('video-active').classList.remove('hidden');
+            
+            // Simulate patient info
+            document.getElementById('current-patient-info').innerHTML = `
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="text-white font-medium">JD</span>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-900">John Doe</div>
+                        <div class="text-sm text-gray-500">Age: 45 • ID: 0001</div>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-600">
+                    <p><strong>Chief Complaint:</strong> Chest pain</p>
+                    <p><strong>Duration:</strong> 2 days</p>
+                </div>
+            `;
+            
+            showNotification('Teleconsultation started successfully');
+        }
+
+        function endConsultation() {
+            isConsultationActive = false;
+            document.getElementById('video-placeholder').classList.remove('hidden');
+            document.getElementById('video-active').classList.add('hidden');
+            document.getElementById('current-patient-info').innerHTML = '<p class="text-gray-500 text-center py-4">No patient selected</p>';
+            chatMessages = [];
+            document.getElementById('chat-messages').innerHTML = '';
+            showNotification('Teleconsultation ended');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message && isConsultationActive) {
+                chatMessages.push({
+                    sender: 'doctor',
+                    message: message,
+                    timestamp: new Date()
+                });
+                
+                input.value = '';
+                updateChatMessages();
+                
+                // Simulate patient response
+                setTimeout(() => {
+                    chatMessages.push({
+                        sender: 'patient',
+                        message: 'Thank you, doctor. I understand.',
+                        timestamp: new Date()
+                    });
+                    updateChatMessages();
+                }, 1000);
+            }
+        }
+
+        function updateChatMessages() {
+            const chatContainer = document.getElementById('chat-messages');
+            chatContainer.innerHTML = '';
+            
+            chatMessages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`;
+                messageDiv.innerHTML = `
+                    <div class="max-w-xs px-3 py-2 rounded-lg ${msg.sender === 'doctor' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-900'}">
+                        <p class="text-sm">${msg.message}</p>
+                        <p class="text-xs mt-1 ${msg.sender === 'doctor' ? 'text-blue-100' : 'text-gray-500'}">
+                            ${msg.timestamp.toLocaleTimeString()}
+                        </p>
+                    </div>
+                `;
+                chatContainer.appendChild(messageDiv);
+            });
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // ML Insights Functions
+        function calculateHealthRisk(formData) {
+            // Simplified ML model simulation
+            const age = parseInt(formData.age) || 0;
+            const bp = parseInt(formData.bloodPressure) || 120;
+            const cholesterol = parseInt(formData.cholesterol) || 200;
+            const bmi = parseFloat(formData.bmi) || 25;
+            const smokingScore = formData.smoking === 'current' ? 30 : formData.smoking === 'former' ? 15 : 0;
+            
+            // Risk calculation (simplified)
+            let riskScore = 0;
+            
+            // Age factor
+            if (age > 65) riskScore += 25;
+            else if (age > 45) riskScore += 15;
+            else if (age > 35) riskScore += 5;
+            
+            // Blood pressure factor
+            if (bp > 140) riskScore += 20;
+            else if (bp > 130) riskScore += 10;
+            
+            // Cholesterol factor
+            if (cholesterol > 240) riskScore += 15;
+            else if (cholesterol > 200) riskScore += 8;
+            
+            // BMI factor
+            if (bmi > 30) riskScore += 15;
+            else if (bmi > 25) riskScore += 8;
+            
+            // Smoking factor
+            riskScore += smokingScore;
+            
+            // Normalize to 0-100
+            riskScore = Math.min(riskScore, 100);
+            
+            return {
+                score: riskScore,
+                level: riskScore > 70 ? 'High' : riskScore > 40 ? 'Medium' : 'Low',
+                recommendations: generateRecommendations(riskScore, formData)
+            };
+        }
+
+        function generateRecommendations(riskScore, formData) {
+            const recommendations = [];
+            
+            if (parseInt(formData.bloodPressure) > 140) {
+                recommendations.push('Monitor blood pressure regularly');
+                recommendations.push('Consider antihypertensive medication');
+            }
+            
+            if (parseFloat(formData.bmi) > 25) {
+                recommendations.push('Maintain healthy weight through diet and exercise');
+            }
+            
+            if (formData.smoking === 'current') {
+                recommendations.push('Smoking cessation program recommended');
+            }
+            
+            if (parseInt(formData.cholesterol) > 200) {
+                recommendations.push('Follow low-cholesterol diet');
+                recommendations.push('Regular lipid profile monitoring');
+            }
+            
+            if (riskScore > 50) {
+                recommendations.push('Schedule follow-up appointment within 2 weeks');
+                recommendations.push('Consider cardiology consultation');
+            }
+            
+            return recommendations;
+        }
+
+        // Modal Functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Notification Function
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Form Handlers
+        document.getElementById('add-patient-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const newPatient = {
+                id: patients.length + 1,
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                age: new Date().getFullYear() - new Date(document.getElementById('date-of-birth').value).getFullYear(),
+                phone: document.getElementById('phone').value,
+                riskLevel: 'low',
+                lastVisit: new Date().toISOString().split('T')[0]
+            };
+            
+            patients.push(newPatient);
+            loadPatients();
+            closeModal('add-patient-modal');
+            showNotification(`Patient ${newPatient.firstName} ${newPatient.lastName} added successfully`);
+            
+            e.target.reset();
+        });
+
+        document.getElementById('book-appointment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const patientId = parseInt(document.getElementById('appointment-patient').value);
+            const patient = patients.find(p => p.id === patientId);
+            
+            const newAppointment = {
+                id: appointments.length + 1,
+                patientId: patientId,
+                patientName: `${patient.firstName} ${patient.lastName}`,
+                date: document.getElementById('appointment-date').value,
+                time: document.getElementById('appointment-time').value,
+                type: document.getElementById('appointment-type').value,
+                status: 'scheduled'
+            };
+            
+            appointments.push(newAppointment);
+            loadAppointments();
+            closeModal('book-appointment-modal');
+            showNotification(`Appointment booked for ${newAppointment.patientName}`);
+            
+            e.target.reset();
+        });
+
+        document.getElementById('risk-assessment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                age: document.getElementById('patient-age').value,
+                gender: document.getElementById('patient-gender').value,
+                bloodPressure: document.getElementById('blood-pressure').value,
+                cholesterol: document.getElementById('cholesterol').value,
+                bmi: document.getElementById('bmi').value,
+                smoking: document.getElementById('smoking').value
+            };
+            
+            const riskResult = calculateHealthRisk(formData);
+            
+            document.getElementById('risk-results').innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="text-4xl font-bold mb-2 ${riskResult.level === 'High' ? 'text-red-600' : riskResult.level === 'Medium' ? 'text-yellow-600' : 'text-green-600'}">
+                        ${riskResult.score}%
+                    </div>
+                    <div class="text-lg font-semibold text-gray-900">${riskResult.level} Risk</div>
+                </div>
+                <div class="text-left">
+                    <h4 class="font-semibold text-gray-900 mb-2">Recommendations:</h4>
+                    <ul class="space-y-1 text-sm text-gray-600">
+                        ${riskResult.recommendations.map(rec => `<li>• ${rec}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            showNotification('Risk assessment completed');
+        });
+
+        // Chat input enter key handler
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            loadPatients();
+            loadAppointments();
+            
+            // Set minimum date for appointments to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointment-date').setAttribute('min', today);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990dd07c12f4a758',t:'MTc2MDg1MTEwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
